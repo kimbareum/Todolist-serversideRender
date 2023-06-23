@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+  <link rel="stylesheet" href="{% static '/css/todo.css' %}">
+{% endblock head %}
+{% block body %}
+  <main class="todo-main">
+    <nav class="todo-category">
+      <div class="category-title">
+        <h2>Todo Categories</h2>
+      </div>
+      <form method="post" class="category-add">
+        <input type="text" id="category_input" name="name" />
+        <button type="submit" class="category-addbtn">&#43;</button>
+      </form>
+        <div class="category-list">
+        {% for category in categories %}
+          {% if forloop.first %}
+          <div class="category show" category="{{category.pk}}">
+          {% else %}
+          <div class="category" category="{{category.pk}}">
+          {% endif %}
+            <button type="button" class="category-select" category="{{category.pk}}">{{category.name}}</button>
+            <button type="button" class="category-delete" category="{{category.pk}}">&#215;</button>
+          </div>
+        {% endfor %}
+        </div>
+    </nav>
+    <section class="todo-list">
+      {% for post in posts %}
+      {% if post.is_clear %}
+      <div class="todo-box clear" todo-id="{{post.pk}}">
+      {% else %}
+      <div class="todo-box" todo-id="{{post.pk}}">
+      {% endif %}
+        <h3 class="todo-title">{{post.title}}</h3>
+        <p class="todo-content">{{post.content}}</p>
+        <div class="todo-button">
+          <button type="button" class="todo-delete" todo-id="{{post.pk}}">&#215;</button>
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+    <form class="todo-editor" method="post">
+      <div class="editor-wrap">
+        <label for="editor-title">제목</label>
+        <input 
+               type="text" 
+               name="title" 
+               id="editor-title" 
+               class="editor-content" 
+               maxlength="16"
+               required
+        />
+        <label for="editor-content">내용</label>
+        <textarea class="editor-content" name="content" id="editor-content" required></textarea>
+        <div class="editor-buttonbox">
+          <button type="button" class="editor-cancle">취소</button>
+          <button type="submit" class="editor-submit">완료</button>
+        </div>
+      </div>
+    </form>
+    <button type="button" class="show-editor">+</button>    
+  </main>
+{% endblock body %}
+{% block js %}
+  <script>
+	  const csrfToken = "{{ csrf_token }}";
+  </script>
+  <script src="{% static '/js/todo.js' %}" type="module"></script>
+{% endblock js %}
+</body>
+</html>

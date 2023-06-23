@@ -1,0 +1,55 @@
+/* index */
+.index-section {
+    display: flex;
+    flex-direction: column;
+    padding: 0 50px;
+}
+
+.index-section > div {
+    display:flex;
+    flex-direction: column;
+    height: 400px;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+.index-subtitle {
+    background: #444444;
+    font-size: 40px;
+    color: white;
+    background-image: url(../img/index_back1.png);
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.index-linkwrap{
+    height: 50px;
+}
+
+.index-linkwrap a {
+    padding: 10px 20px;
+    background: #EEEEEE;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.index-linkwrap a:link {
+    color : black;
+}
+
+.index-linkwrap a:visited {
+    color : black;
+}
+
+.index-description {
+    font-size: 30px;
+    background-image: url(../img/index_back2.png);
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size: contain;
+}

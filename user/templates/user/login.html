@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+  <link rel="stylesheet" href="{% static '/css/login.css' %}">
+{% endblock head %}
+{% block body %}
+  <main class="login-main">
+    <form class="login-form" action="" method="post" novalidate>
+        {% csrf_token %}
+        <div class="login-input">
+          <label for="id_username">사용자 이름</label>
+          {{ form.username }}
+        </div>
+        <div class="login-input">
+          <label for="id_password">패스워드</label>
+          {{ form.password }}
+        </div>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        <button type="submit" class="login-submit">로그인</button>
+    </form>
+  </main>
+{% endblock body %}

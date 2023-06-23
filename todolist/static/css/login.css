@@ -1,0 +1,44 @@
+.login-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    min-width: 400px;
+    min-height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 30px;
+}
+
+.login-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.login-input label {
+    padding-right: 30px;
+}
+
+.login-input input {
+    width: 220px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.login-submit {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 20px;
+    background: #EEEEEE;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.login-submit:hover {
+    box-shadow: 1px 1px 1px black;
+}

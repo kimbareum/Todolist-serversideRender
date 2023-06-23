@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <!-- style -->
+  <link rel="stylesheet" href="{% static '/css/reset.css' %}">
+  <link rel="stylesheet" href="{% static '/css/style.css' %}">
+  {% block head %}
+  {% endblock head %}
+</head>
+<body>
+  <header class="header">
+    <h1 class="title">
+      <a href="/">Todo list</a>
+    </h1>
+    <nav class="header-button">
+    {% if user.is_authenticated %}
+        <p>{{user.nickname}}님 환영합니다.</p>
+        <a href="{% url 'user:logout' %}">로그아웃</a>
+    {% else %}
+        <a href="{% url 'user:login' %}">로그인</a>
+        <a href="/signup/">회원가입</a>
+    {% endif %} 
+    </nav>
+  </header>
+  {% block body %}
+  {% endblock body %}
+  <footer class="footer">
+    <a class="github-link" href="https://github.com/kimbareum/Todolist" target="_blank">
+      <img src="{% static 'img/icon_github.png'%}" alt="github링크">
+    </a>
+    <p class="footer-text">Copyright 2023. KimBareum. All rights reserved.</p>
+  </footer>
+  {% block js %}
+  {% endblock js %}
+</body>
+</html>

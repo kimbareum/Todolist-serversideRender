@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+  <link rel="stylesheet" href="{% static '/css/index.css' %}">
+{% endblock head %}
+{% block body %}
+  <main>
+    <section class="index-section">
+      <div class="index-subtitle">
+        <h2>여러분의 Todo List를 관리하세요.</h2>
+        <div class="index-linkwrap">
+          <a href="/login/">로그인하기</a>
+          <a href="/signup/">시도해보기</a>
+        </div>  
+      </div>
+      <div class="index-description">
+      </div>
+    </section>
+  </main>
+{% endblock body %}
