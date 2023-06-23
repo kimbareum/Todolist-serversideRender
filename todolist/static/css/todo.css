@@ -101,6 +101,14 @@
     line-height: 20px;
 }
 
+.todo-toggle {
+    position: absolute;
+    left: 5px;
+    width: 16px;
+    height: 16px;
+    top: auto;
+}
+
 .todo-delete {
     position: absolute;
     top: 5px;
@@ -118,9 +126,7 @@
 }
 
 .show-editor {
-    position: fixed;
-    right: 40px;
-    bottom: 40px;
+    margin-left: auto;
     background: black;
     color: white;
     border: none;

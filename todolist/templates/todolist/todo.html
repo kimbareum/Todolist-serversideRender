@@ -9,48 +9,74 @@
       <div class="category-title">
         <h2>Todo Categories</h2>
       </div>
-      <form method="post" class="category-add">
-        <input type="text" id="category_input" name="name" />
+      <form action="{% url 'todolist:category-write' %}" method="post" class="category-add">
+        {% csrf_token %}
+        <input type="text" id="category_input" name="name" required/>
         <button type="submit" class="category-addbtn">&#43;</button>
       </form>
         <div class="category-list">
-        {% for category in categories %}
-          {% if forloop.first %}
-          <div class="category show" category="{{category.pk}}">
-          {% else %}
-          <div class="category" category="{{category.pk}}">
-          {% endif %}
-            <button type="button" class="category-select" category="{{category.pk}}">{{category.name}}</button>
-            <button type="button" class="category-delete" category="{{category.pk}}">&#215;</button>
-          </div>
-        {% endfor %}
+        {% if categories %}
+          {% for category in categories %}
+            {% if category.pk == category_id %}
+            <div class="category show">
+            {% else %}
+            <div class="category">
+            {% endif %}
+              <form action="{% url 'todolist:todo-detail' category_id=category.pk %}" method="get">
+                <button type="submit" class="category-select" category="{{category.pk}}">{{category.name}}</button>
+              </form>
+              <form action="{% url 'todolist:category-delete' category_id=category.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="category-delete" category="{{category.pk}}">&#215;</button>
+              </form>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>카테고리가 없습니다.</p>
+        {% endif %}
         </div>
     </nav>
     <section class="todo-list">
-      {% for post in posts %}
-      {% if post.is_clear %}
-      <div class="todo-box clear" todo-id="{{post.pk}}">
-      {% else %}
-      <div class="todo-box" todo-id="{{post.pk}}">
-      {% endif %}
-        <h3 class="todo-title">{{post.title}}</h3>
-        <p class="todo-content">{{post.content}}</p>
-        <div class="todo-button">
-          <button type="button" class="todo-delete" todo-id="{{post.pk}}">&#215;</button>
+      {% if todos %}
+        {% for todo in todos %}
+        {% if todo.is_clear %}
+        <div class="todo-box clear">
+          <input type="checkbox" class="todo-toggle" url="{% url 'todolist:todo-toggle' todo_id=todo.pk %}" checked>
+        {% else %}
+        <div class="todo-box">
+          <input type="checkbox" class="todo-toggle" url="{% url 'todolist:todo-toggle' todo_id=todo.pk %}">
+        {% endif %}
+          <h3 class="todo-title">{{todo.title}}</h3>
+          <p class="todo-content">{{todo.content}}</p>
+          <div >
+            <form action="{% url 'todolist:todo-delete' todo_id=todo.pk %}" method="post" class="todo-button">
+              {% csrf_token %}
+              <button type="submit" class="todo-delete">&#215;</button>
+            </form>
+          </div>
         </div>
-      </div>
-      {% endfor %}
+        {% endfor %}
+        <button type="button" class="show-editor">+</button>
+      {% else %}
+        {% if category_id %}
+          <div class="todo-box">할 일이 없습니다.</div>
+          <button type="button" class="show-editor">+</button>
+        {% else %}
+          <div class="todo-box">카테고리를 생성해주세요.</div>
+        {% endif %}
+      {% endif %}
     </section>
-    <form class="todo-editor" method="post">
+    {% if category_id %}
+    <form class="todo-editor" action="{% url 'todolist:todo-write' category_id=category_id %}" method="post">
       <div class="editor-wrap">
         <label for="editor-title">제목</label>
         <input 
-               type="text" 
-               name="title" 
-               id="editor-title" 
-               class="editor-content" 
-               maxlength="16"
-               required
+              type="text" 
+              name="title" 
+              id="editor-title" 
+              class="editor-content" 
+              maxlength="16"
+              required
         />
         <label for="editor-content">내용</label>
         <textarea class="editor-content" name="content" id="editor-content" required></textarea>
@@ -59,15 +85,50 @@
           <button type="submit" class="editor-submit">완료</button>
         </div>
       </div>
-    </form>
-    <button type="button" class="show-editor">+</button>    
+      {% csrf_token %}
+      </form>
+    {% endif %}
   </main>
 {% endblock body %}
 {% block js %}
   <script>
-	  const csrfToken = "{{ csrf_token }}";
+    if ("{{ category_id }}" !== "None") {
+      const csrfToken = "{{ csrf_token }}";
+      const todoEditor = document.querySelector(".todo-editor");
+      const showEditorBtn = document.querySelector(".show-editor");
+      const closeEditorBtn = document.querySelector(".editor-cancle");
+      const todoToggle = document.querySelectorAll(".todo-toggle");
+
+      const editorToggle = () => {
+          todoEditor.classList.toggle("show");
+          if (todoEditor.classList.contains("show")){
+              todoEditor.querySelector("input").focus();
+          }
+      }
+      showEditorBtn.addEventListener("click", () => {
+          editorToggle();
+      })
+
+      closeEditorBtn.addEventListener("click", () => {
+          editorToggle();
+      })
+      todoToggle.forEach((checkBox) => {
+      const box = checkBox.parentElement
+      const url = checkBox.getAttribute("url")
+      checkBox.addEventListener("change", ()=>{
+        fetch(url,{
+          method: "post",
+          headers: {
+              "X-CSRFToken": csrfToken
+          },
+              redirect: "follow",
+          })
+        box.classList.toggle("clear");
+        })
+      })
+    }
   </script>
-  <script src="{% static '/js/todo.js' %}" type="module"></script>
+{# <script src="{% static '/js/todo.js' %}" type="module"></script> #}
 {% endblock js %}
 </body>
 </html>

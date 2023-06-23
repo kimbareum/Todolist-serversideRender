@@ -6,19 +6,10 @@ app_name = 'todolist'
 urlpatterns = [
     path('', views.Index.as_view(), name='index'),
     path('list/', views.TodoList.as_view(), name='todo'),
-    # path('', views.index), # FBV
-    # path('', views.Index.as_view(), name='list'), # CBV
-    # path('write/', views.write, name='write'),
-    # 제네릭뷰
-    # path('', views.List.as_view(), name='list'),
-    # path('write/', views.Write.as_view(), name='write'),
-    # path('detail/<int:post_id>/', views.DetailView.as_view(), name='detail'),
-    # path('detail/<int:pk>/edit', views.Update.as_view(), name='edit'),
-    # path('detail/<int:pk>/delete', views.Delete.as_view(), name='delete'),
-    # # 코멘트
-    # path('detail/<int:post_id>/comment/write', views.CommentWrite.as_view(), name='cm-write'),
-    # path('detail/comment/<int:comment_id>/delete', views.CommentDelete.as_view(), name='cm-delete'),
-    # # 태그
-    # path('detail/<int:post_id>/tag/write', views.HashTagWrite.as_view(), name='tag-write'),
-    # path('detail/tag/<int:hashTag_id>/delete', views.HashTagDelete.as_view(), name='tag-delete'),
+    path('list/<int:category_id>', views.TodoList.as_view(), name='todo-detail'),
+    path('list/write', views.CategoryWrite.as_view(), name='category-write'),
+    path('list/<int:category_id>/delete', views.CategoryDelete.as_view(), name='category-delete'),
+    path('list/<int:category_id>/todo/write', views.TodoWrite.as_view(), name='todo-write'),
+    path('list/todo/<int:todo_id>/delete', views.TodoDelete.as_view(), name='todo-delete'),
+    path('list/todo/<int:todo_id>/toggle', views.TodoClearToggle.as_view(), name='todo-toggle'),
 ]

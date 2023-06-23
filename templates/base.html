@@ -15,7 +15,7 @@
 <body>
   <header class="header">
     <h1 class="title">
-      <a href="/">Todo list</a>
+      <a href="{% url 'todolist:index' %}">Todo list</a>
     </h1>
     <nav class="header-button">
     {% if user.is_authenticated %}
@@ -23,7 +23,7 @@
         <a href="{% url 'user:logout' %}">로그아웃</a>
     {% else %}
         <a href="{% url 'user:login' %}">로그인</a>
-        <a href="/signup/">회원가입</a>
+        <a href="{% url 'user:signup' %}">회원가입</a>
     {% endif %} 
     </nav>
   </header>
