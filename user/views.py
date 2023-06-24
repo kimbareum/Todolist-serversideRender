@@ -20,7 +20,6 @@ class CustomLogin(View):
 
     def post(self, request):
         form = LoginForm(request.POST)
-        print(form)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']

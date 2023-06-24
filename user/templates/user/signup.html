@@ -5,7 +5,7 @@
     {% endblock head %}
     {% block body %}
       <main class="signup-main">
-        <form class="signup-form" action="{% url 'user:signup' %}" method="post">
+        <form class="signup-form" action="" method="post">
           {% csrf_token %}
           <div class="signup-input">
             <label for="id_username">아이디</label>

@@ -24,6 +24,9 @@ class TodoList(LoginRequiredMixin, View):
         if categories:
             if category_id is None:
                 category_id = categories[0].pk
+            category_user = Category.objects.get(pk=category_id).user
+            if category_user != user:
+                return redirect('todolist:todo')
             todos = Todo.objects.filter(category=category_id)
         else:
             todos = {}
