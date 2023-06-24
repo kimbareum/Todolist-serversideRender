@@ -8,6 +8,7 @@ from .forms import CategoryForm, TodoForm
 
 
 # Create your views here.
+### 인덱스 페이지
 class Index(View):
 
     def get(self, request):
@@ -16,6 +17,7 @@ class Index(View):
         return render(request, 'todolist/index.html')
 
 
+### 리스트 페이지
 class TodoList(LoginRequiredMixin, View):
 
     def get(self, request, category_id=None):
@@ -40,6 +42,7 @@ class TodoList(LoginRequiredMixin, View):
         return render(request, 'todolist/todo.html', context)
 
 
+### 카테고리 CRUD
 class CategoryWrite(View):
 
     def post(self, request):
@@ -48,7 +51,7 @@ class CategoryWrite(View):
             user = request.user
             name = form.cleaned_data['name']
             category = Category.objects.create(name=name, user=user)
-            return redirect(f'todolist:todo-detail', category_id=category.pk)
+            return redirect('todolist:todo-detail', category_id=category.pk)
 
 
 class CategoryDelete(View):
@@ -59,6 +62,20 @@ class CategoryDelete(View):
         return redirect('todolist:todo')
 
 
+class CategoryUpdate(View):
+
+    def post(self, request, category_id):
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = Category.objects.get(pk=category_id)
+            name = form.cleaned_data['name']
+            category.name = name
+            category.save()
+            # return JsonResponse({'category_update': True})
+            return redirect('todolist:todo-detail', category_id=category_id)
+
+
+### 할일 CRUD
 class TodoWrite(View):
 
     def post(self, request, category_id):
@@ -89,3 +106,19 @@ class TodoClearToggle(View):
         category_id = todo.category.id
         return JsonResponse({'is_clear': todo.is_clear})
         # return redirect('todolist:todo-detail', category_id=category_id)
+
+
+class TodoUpdate(View):
+
+    def post(self, request, todo_id):
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            todo = Todo.objects.get(pk=todo_id)
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
+            # category_id = todo.category.id
+            todo.title = title
+            todo.content = content
+            todo.save()
+            return JsonResponse({'todo_update': True})
+            return redirect('todolist:todo-detail', category_id=category_id)

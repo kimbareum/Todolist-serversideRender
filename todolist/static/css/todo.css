@@ -29,19 +29,36 @@
     flex-grow: 1;
 }
 
+.category-btnwrap {
+    display: flex;
+}
+
 .category-addbtn,
-.category-delete {
+.category-delete,
+.category-update {
     width: 21px;
     height: 21px;
     border: none;
     border-radius: 100%;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 600;
+    line-height: 13px;
+}
+
+.category-update {
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .category-addbtn:hover,
-.category-delete:hover {
+.category-delete:hover,
+.category-update:hover {
     box-shadow: 0 0 2px 2px black;
+}
+
+#category-update {
+    position: absolute;
+    left: 0; 
 }
 
 
@@ -53,12 +70,14 @@
 
 .category {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 10px;
 }
 
 .category-select {
     flex-grow: 1;
+    width: 100%;
     background: none;
     border: none;
     cursor: pointer;
@@ -121,7 +140,23 @@
     border-radius: 100%;
 }
 
+.todo-update {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    font-size: 14px;
+    border: none;
+    border-radius: 100%;
+}
+
 .todo-delete:hover {
+    box-shadow: 0 0 2px 2px black;
+}
+
+.todo-update:hover {
     box-shadow: 0 0 2px 2px black;
 }
 

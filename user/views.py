@@ -50,6 +50,7 @@ class SignUp(View):
             nickname = form.cleaned_data['nickname']
             user = User.objects.create_user(username=username, nickname=nickname,
                                             password=password)
+            messages.success(request, '회원가입에 성공했습니다.')
             return redirect('user:login')
         else:
             messages.error(request, form.non_field_errors())

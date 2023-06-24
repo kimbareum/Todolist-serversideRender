@@ -11,7 +11,7 @@
       </div>
       <form action="{% url 'todolist:category-write' %}" method="post" class="category-add">
         {% csrf_token %}
-        <input type="text" id="category_input" name="name" required/>
+        <input type="text" id="category-input" name="name" required maxlength="15"/>
         <button type="submit" class="category-addbtn">&#43;</button>
       </form>
         <div class="category-list">
@@ -25,10 +25,17 @@
               <form action="{% url 'todolist:todo-detail' category_id=category.pk %}" method="get">
                 <button type="submit" class="category-select" category="{{category.pk}}">{{category.name}}</button>
               </form>
-              <form action="{% url 'todolist:category-delete' category_id=category.pk %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="category-delete" category="{{category.pk}}">&#215;</button>
-              </form>
+              <div class="category-btnwrap">
+                <form action="{% url 'todolist:category-update' category_id=category.pk %}" method="post">
+                  <input type="hidden" id="category-update" name="name" required maxlength="15" />
+                  <button type="button" class="category-update">&#9998;</button>
+                  {% csrf_token %}
+                </form>
+                <form action="{% url 'todolist:category-delete' category_id=category.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="category-delete" category="{{category.pk}}">&#215;</button>
+                </form>
+              </div>
             </div>
           {% endfor %}
         {% else %}
@@ -48,12 +55,14 @@
         {% endif %}
           <h3 class="todo-title">{{todo.title}}</h3>
           <p class="todo-content">{{todo.content}}</p>
-          <div >
-            <form action="{% url 'todolist:todo-delete' todo_id=todo.pk %}" method="post" class="todo-button">
-              {% csrf_token %}
-              <button type="submit" class="todo-delete">&#215;</button>
-            </form>
-          </div>
+          <form action="{% url 'todolist:todo-update' todo_id=todo.pk %}" method="post" class="todo-button">
+            {% csrf_token %}
+            <button type="submit" class="todo-update">&#9998;</button>
+          </form>
+          <form action="{% url 'todolist:todo-delete' todo_id=todo.pk %}" method="post" class="todo-button">
+            {% csrf_token %}
+            <button type="submit" class="todo-delete">&#215;</button>
+          </form>
         </div>
         {% endfor %}
         <button type="button" class="show-editor">+</button>
@@ -75,7 +84,7 @@
               name="title" 
               id="editor-title" 
               class="editor-content" 
-              maxlength="16"
+              maxlength="15"
               required
         />
         <label for="editor-content">내용</label>
@@ -92,8 +101,25 @@
 {% endblock body %}
 {% block js %}
   <script>
+    const csrfToken = "{{ csrf_token }}";
+    const API = (url, data = null) => {
+      const body = new FormData()
+      if (data) {
+        for (const name in data){
+          body.append(name, data[name])
+        }
+      }
+      fetch(url,{
+        method: "post",
+        headers: {
+            "X-CSRFToken": csrfToken
+        },
+            redirect: "follow",
+            body: body,
+        });
+      }
+    
     if ("{{ category_id }}" !== "None") {
-      const csrfToken = "{{ csrf_token }}";
       const todoEditor = document.querySelector(".todo-editor");
       const showEditorBtn = document.querySelector(".show-editor");
       const closeEditorBtn = document.querySelector(".editor-cancle");
@@ -115,18 +141,33 @@
       todoToggle.forEach((checkBox) => {
       const box = checkBox.parentElement
       const url = checkBox.getAttribute("url")
-      checkBox.addEventListener("change", ()=>{
-        fetch(url,{
-          method: "post",
-          headers: {
-              "X-CSRFToken": csrfToken
-          },
-              redirect: "follow",
-          })
+      checkBox.addEventListener("change", () => {
+        API(url);
         box.classList.toggle("clear");
         })
       })
     }
+    const categoryUpdateBtn = document.querySelectorAll(".category-update");
+    categoryUpdateBtn.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const form = e.target.parentElement;
+        const input = form.querySelector("input");
+        const category = form.parentElement.parentElement.querySelector(".category-select");
+        if (input.value) {
+          const url = form.getAttribute("action");
+          API(url, data = {name: input.value});
+          category.innerText = input.value;
+          input.setAttribute("type", "hidden");
+          input.value = "";
+        }
+        else {
+          input.setAttribute("type", "text");
+          input.setAttribute("style", `width: ${Math.max(category.offsetWidth-5, 150)}px;`);
+          input.value = category.innerText;
+          input.focus();
+        }
+      })
+    })
   </script>
 {# <script src="{% static '/js/todo.js' %}" type="module"></script> #}
 {% endblock js %}
