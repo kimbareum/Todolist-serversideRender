@@ -1,13 +1,19 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 
 from .models import Category, Todo
 from .forms import CategoryForm, TodoForm
 
 
 # Create your views here.
+### 유저 정보 확인
+def userValidate(user, data_user):
+    return user == data_user
+    # return HttpResponseForbidden()
+
+
 ### 인덱스 페이지
 class Index(View):
 
@@ -27,8 +33,8 @@ class TodoList(LoginRequiredMixin, View):
             if category_id is None:
                 category_id = categories[0].pk
             category_user = Category.objects.get(pk=category_id).user
-            if category_user != user:
-                return redirect('todolist:todo')
+            if not userValidate(user, category_user):
+                redirect('todolist:todo')
             todos = Todo.objects.filter(category=category_id)[::-1]
         else:
             todos = {}
@@ -58,16 +64,17 @@ class CategoryDelete(View):
 
     def post(self, request, category_id):
         category = Category.objects.get(pk=category_id)
-        category.delete()
-        return redirect('todolist:todo')
+        if userValidate(request.user, category.user):
+            category.delete()
+            return redirect('todolist:todo')
 
 
 class CategoryUpdate(View):
 
     def post(self, request, category_id):
         form = CategoryForm(request.POST)
-        if form.is_valid():
-            category = Category.objects.get(pk=category_id)
+        category = Category.objects.get(pk=category_id)
+        if form.is_valid() and userValidate(request.user, category.user):
             name = form.cleaned_data['name']
             category.name = name
             category.save()
@@ -80,8 +87,8 @@ class TodoWrite(View):
 
     def post(self, request, category_id):
         form = TodoForm(request.POST)
-        if form.is_valid():
-            category = Category.objects.get(pk=category_id)
+        category = Category.objects.get(pk=category_id)
+        if form.is_valid() and userValidate(request.user, category.user):
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
             todo = Todo.objects.create(title=title, content=content, category=category)
@@ -92,26 +99,29 @@ class TodoDelete(View):
 
     def post(self, request, todo_id):
         todo = Todo.objects.get(pk=todo_id)
-        category_id = todo.category.id
-        todo.delete()
-        return redirect('todolist:todo-detail', category_id=category_id)
+        if userValidate(request.user, todo.category.user):
+            category_id = todo.category.id
+            todo.delete()
+            return redirect('todolist:todo-detail', category_id=category_id)
 
 
 class TodoClearToggle(View):
 
     def post(self, request, todo_id):
         todo = Todo.objects.get(pk=todo_id)
-        todo.is_clear = not todo.is_clear
-        todo.save()
-        return JsonResponse({'is_clear': todo.is_clear})
+
+        if userValidate(request.user, todo.category.user):
+            todo.is_clear = not todo.is_clear
+            todo.save()
+            return JsonResponse({'is_clear': todo.is_clear})
 
 
 class TodoUpdate(View):
 
     def post(self, request, todo_id):
         form = TodoForm(request.POST)
-        if form.is_valid():
-            todo = Todo.objects.get(pk=todo_id)
+        todo = Todo.objects.get(pk=todo_id)
+        if form.is_valid() and userValidate(request.user, todo.category.user):
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
             category_id = todo.category.id

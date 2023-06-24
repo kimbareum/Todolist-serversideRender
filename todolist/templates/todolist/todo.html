@@ -135,7 +135,7 @@
       showEditorBtn.addEventListener("click", () => {
         todoEditor.setAttribute("action", editorAPIUrl);
         editorInput.value = "";
-        editorTextarea.innerText = "";
+        editorTextarea.value = "";
         editorToggle();
       })
 
@@ -160,7 +160,7 @@
         btn.addEventListener("click", ()=>{
           todoEditor.setAttribute("action", url);
           editorInput.value = title.innerText;
-          editorTextarea.innerText = content.innerText;
+          editorTextarea.value = content.innerText;
           editorToggle();
         })
       })      
