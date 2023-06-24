@@ -29,7 +29,7 @@ class TodoList(LoginRequiredMixin, View):
             category_user = Category.objects.get(pk=category_id).user
             if category_user != user:
                 return redirect('todolist:todo')
-            todos = Todo.objects.filter(category=category_id)
+            todos = Todo.objects.filter(category=category_id)[::-1]
         else:
             todos = {}
 
@@ -103,9 +103,7 @@ class TodoClearToggle(View):
         todo = Todo.objects.get(pk=todo_id)
         todo.is_clear = not todo.is_clear
         todo.save()
-        category_id = todo.category.id
         return JsonResponse({'is_clear': todo.is_clear})
-        # return redirect('todolist:todo-detail', category_id=category_id)
 
 
 class TodoUpdate(View):
@@ -116,9 +114,9 @@ class TodoUpdate(View):
             todo = Todo.objects.get(pk=todo_id)
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
-            # category_id = todo.category.id
+            category_id = todo.category.id
             todo.title = title
             todo.content = content
             todo.save()
-            return JsonResponse({'todo_update': True})
+            # return JsonResponse({'todo_update': True})
             return redirect('todolist:todo-detail', category_id=category_id)

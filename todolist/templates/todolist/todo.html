@@ -48,17 +48,14 @@
         {% for todo in todos %}
         {% if todo.is_clear %}
         <div class="todo-box clear">
-          <input type="checkbox" class="todo-toggle" url="{% url 'todolist:todo-toggle' todo_id=todo.pk %}" checked>
+          <input type="checkbox" class="todo-toggle" action="{% url 'todolist:todo-toggle' todo_id=todo.pk %}" checked>
         {% else %}
         <div class="todo-box">
-          <input type="checkbox" class="todo-toggle" url="{% url 'todolist:todo-toggle' todo_id=todo.pk %}">
+          <input type="checkbox" class="todo-toggle" action="{% url 'todolist:todo-toggle' todo_id=todo.pk %}">
         {% endif %}
           <h3 class="todo-title">{{todo.title}}</h3>
           <p class="todo-content">{{todo.content}}</p>
-          <form action="{% url 'todolist:todo-update' todo_id=todo.pk %}" method="post" class="todo-button">
-            {% csrf_token %}
-            <button type="submit" class="todo-update">&#9998;</button>
-          </form>
+          <button type="button" class="todo-update todo-button" action="{% url 'todolist:todo-update' todo_id=todo.pk %}">&#9998;</button>
           <form action="{% url 'todolist:todo-delete' todo_id=todo.pk %}" method="post" class="todo-button">
             {% csrf_token %}
             <button type="submit" class="todo-delete">&#215;</button>
@@ -83,7 +80,7 @@
               type="text" 
               name="title" 
               id="editor-title" 
-              class="editor-content" 
+              class="editor-title" 
               maxlength="15"
               required
         />
@@ -101,7 +98,6 @@
 {% endblock body %}
 {% block js %}
   <script>
-    const csrfToken = "{{ csrf_token }}";
     const API = (url, data = null) => {
       const body = new FormData()
       if (data) {
@@ -112,7 +108,7 @@
       fetch(url,{
         method: "post",
         headers: {
-            "X-CSRFToken": csrfToken
+            "X-CSRFToken": "{{ csrf_token }}"
         },
             redirect: "follow",
             body: body,
@@ -123,7 +119,12 @@
       const todoEditor = document.querySelector(".todo-editor");
       const showEditorBtn = document.querySelector(".show-editor");
       const closeEditorBtn = document.querySelector(".editor-cancle");
-      const todoToggle = document.querySelectorAll(".todo-toggle");
+      const todoToggleBtn = document.querySelectorAll(".todo-toggle");
+      const todoUpdateBtn = document.querySelectorAll(".todo-update");
+      const editorInput = todoEditor.querySelector(".editor-title");
+      const editorTextarea = todoEditor.querySelector(".editor-content");
+
+      const editorAPIUrl = todoEditor.getAttribute("action")
 
       const editorToggle = () => {
           todoEditor.classList.toggle("show");
@@ -132,27 +133,46 @@
           }
       }
       showEditorBtn.addEventListener("click", () => {
-          editorToggle();
+        todoEditor.setAttribute("action", editorAPIUrl);
+        editorInput.value = "";
+        editorTextarea.innerText = "";
+        editorToggle();
       })
 
       closeEditorBtn.addEventListener("click", () => {
-          editorToggle();
+         editorToggle();
       })
-      todoToggle.forEach((checkBox) => {
-      const box = checkBox.parentElement
-      const url = checkBox.getAttribute("url")
+
+      todoToggleBtn.forEach((checkBox) => {
+      const box = checkBox.parentElement;
+      const url = checkBox.getAttribute("action");
       checkBox.addEventListener("change", () => {
         API(url);
         box.classList.toggle("clear");
         })
       })
+
+      todoUpdateBtn.forEach((btn) => {
+        const url = btn.getAttribute("action");
+        const todoBox = btn.parentElement
+        const title = todoBox.querySelector(".todo-title")
+        const content = todoBox.querySelector(".todo-content")
+        btn.addEventListener("click", ()=>{
+          todoEditor.setAttribute("action", url);
+          editorInput.value = title.innerText;
+          editorTextarea.innerText = content.innerText;
+          editorToggle();
+        })
+      })      
     }
+
     const categoryUpdateBtn = document.querySelectorAll(".category-update");
+
     categoryUpdateBtn.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const form = e.target.parentElement;
-        const input = form.querySelector("input");
-        const category = form.parentElement.parentElement.querySelector(".category-select");
+      const form = btn.parentElement;
+      const input = form.querySelector("input");
+      const category = form.parentElement.parentElement.querySelector(".category-select");
+      btn.addEventListener("click", () => {
         if (input.value) {
           const url = form.getAttribute("action");
           API(url, data = {name: input.value});
@@ -162,7 +182,6 @@
         }
         else {
           input.setAttribute("type", "text");
-          input.setAttribute("style", `width: ${Math.max(category.offsetWidth-5, 150)}px;`);
           input.value = category.innerText;
           input.focus();
         }
