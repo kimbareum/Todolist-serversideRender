@@ -54,8 +54,8 @@
 
 - 데이터 베이스 구조  
     <figure>
-        <img src="./readme/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4.png">
-        <figcaption>해당 이미지는 erdcloud 에서 작성했습니다.</figcaption>
+        <img src="./readme/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4.png">  
+        <small><figcaption>해당 이미지는 erdcloud 에서 작성했습니다.</figcaption></small>
     </figure>
 
     - 회원마다 여러개의 카테고리를 가질 수 있고, 카테고리 별로 여러개의 할 일을 가질 수 있는 데이터베이스 구조로 설계했습니다.  
